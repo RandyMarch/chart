@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const API_KEY = "AIzaSyDKN9Aj7ljAEOQFWSr9DlRZQIpC7Cx8bpE";
-    const CHANNEL_ID = "UC8vO5Qy3HGzzrd3LqenT2fg"; // Replace with the actual channel ID for @vdud
+    const CHANNEL_ID = "UC8vO5Qy3HGzzrd3LqenT2fg"; // The channel ID for @vdud
+
     const videoGroups = {
         "More than 20M": [],
         "More than 10M": [],
@@ -14,10 +15,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         do {
             const response = await fetch(
-                `https://www.googleapis.com/youtube/v3/search?key=${AIzaSyDKN9Aj7ljAEOQFWSr9DlRZQIpC7Cx8bpE}&channelId=${UC8vO5Qy3HGzzrd3LqenT2fg}&part=snippet,id&order=viewCount&maxResults=50&pageToken=${nextPageToken}`
+                `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=viewCount&maxResults=50&pageToken=${nextPageToken}`
             );
+
             const data = await response.json();
-            videos = videos.concat(data.items);
+
+            if (data.items) {
+                videos = videos.concat(data.items);
+            }
+
             nextPageToken = data.nextPageToken || "";
         } while (nextPageToken);
 
@@ -26,8 +32,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function fetchVideoStats(videoIds) {
         const response = await fetch(
-            `https://www.googleapis.com/youtube/v3/videos?key=${AIzaSyDKN9Aj7ljAEOQFWSr9DlRZQIpC7Cx8bpE}&id=${videoIds.join(",")}&part=statistics,snippet`
+            `https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(",")}&part=statistics,snippet`
         );
+
         const data = await response.json();
         return data.items;
     }
@@ -35,6 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function groupVideosByViews(videos) {
         videos.forEach((video) => {
             const viewCount = parseInt(video.statistics.viewCount, 10);
+
             if (viewCount > 20000000) {
                 videoGroups["More than 20M"].push(video);
             } else if (viewCount > 10000000) {
@@ -49,6 +57,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function renderTable() {
         const tbody = document.getElementById("videos-tbody");
+
+        if (!tbody) {
+            console.error("Table body element not found!");
+            return;
+        }
+
         Object.keys(videoGroups).forEach((group) => {
             videoGroups[group].forEach((video) => {
                 const row = document.createElement("tr");
@@ -63,9 +77,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    const videos = await fetchVideos();
-    const videoIds = videos.map((video) => video.id.videoId);
-    const videoDetails = await fetchVideoStats(videoIds);
-    groupVideosByViews(videoDetails);
-    renderTable();
+    try {
+        const videos = await fetchVideos();
+        const videoIds = videos
+            .filter((video) => video.id.videoId) // Ensure we only use valid video IDs
+            .map((video) => video.id.videoId);
+
+        if (videoIds.length === 0) {
+            console.error("No video IDs found!");
+            return;
+        }
+
+        const videoDetails = await fetchVideoStats(videoIds);
+        groupVideosByViews(videoDetails);
+        renderTable();
+    } catch (error) {
+        console.error("Error occurred while fetching and rendering videos:", error);
+    }
 });
