@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    const API_KEY = "YOUR_YOUTUBE_API_KEY";
+    const API_KEY = "AIzaSyDKN9Aj7ljAEOQFWSr9DlRZQIpC7Cx8bpE";
     const CHANNEL_ID = "UC8vO5Qy3HGzzrd3LqenT2fg"; // Replace with the actual channel ID for @vdud
     const videoGroups = {
         "More than 20M": [],
