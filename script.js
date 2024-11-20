@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         do {
             const response = await fetch(
-                `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=viewCount&maxResults=50&pageToken=${nextPageToken}`
+                `https://www.googleapis.com/youtube/v3/search?key=${AIzaSyDKN9Aj7ljAEOQFWSr9DlRZQIpC7Cx8bpE}&channelId=${UC8vO5Qy3HGzzrd3LqenT2fg}&part=snippet,id&order=viewCount&maxResults=50&pageToken=${nextPageToken}`
             );
             const data = await response.json();
             videos = videos.concat(data.items);
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function fetchVideoStats(videoIds) {
         const response = await fetch(
-            `https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(",")}&part=statistics,snippet`
+            `https://www.googleapis.com/youtube/v3/videos?key=${AIzaSyDKN9Aj7ljAEOQFWSr9DlRZQIpC7Cx8bpE}&id=${videoIds.join(",")}&part=statistics,snippet`
         );
         const data = await response.json();
         return data.items;
